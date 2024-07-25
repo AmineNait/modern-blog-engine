@@ -18,6 +18,7 @@ namespace BlogEngine.Api.Services
         public async Task<IEnumerable<Post>> GetPostsAsync()
         {
             return await _context.Posts
+                .Include(p => p.Category)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -25,6 +26,7 @@ namespace BlogEngine.Api.Services
         public async Task<Post?> GetPostByIdAsync(int id)
         {
             return await _context.Posts
+                .Include(p => p.Category)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
