@@ -1,0 +1,22 @@
+# Backend specific
+backend/BlogEngine.Api/bin
+backend/BlogEngine.Api/obj
+backend/BlogEngine.Api/.vs
+backend/BlogEngine.Api/.vscode
+backend/BlogEngine.Api/*.md
+backend/BlogEngine.Api/*.ts
+backend/BlogEngine.Api/*.json
+backend/BlogEngine.Api/*.log
+backend/BlogEngine.Api/Dockerfile
+
+# Frontend specific
+frontend/node_modules
+frontend/build
+frontend/.vscode
+frontend/.git
+frontend/Dockerfile
+
+# General exclusions
+.git
+.gitignore
+docker-compose.override.yml
