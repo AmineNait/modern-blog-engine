@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BlogEngine.Api.Data;
+using BlogEngine.Api.Services;
 using BlogEngine.Api.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BlogEngine.Api.Controllers
 {
@@ -9,32 +10,33 @@ namespace BlogEngine.Api.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private readonly BlogContext _context;
+        private readonly IPostService _postService;
 
-        public PostsController(BlogContext context)
+        public PostsController(IPostService postService)
         {
-            _context = context;
+            _postService = postService;
         }
 
         // GET: api/Posts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
         {
-            return await _context.Posts.ToListAsync();
+            var posts = await _postService.GetPostsAsync();
+            return Ok(posts);
         }
 
         // GET: api/Posts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _postService.GetPostByIdAsync(id);
 
             if (post == null)
             {
                 return NotFound();
             }
 
-            return post;
+            return Ok(post);
         }
 
         // PUT: api/Posts/5
@@ -46,23 +48,7 @@ namespace BlogEngine.Api.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(post).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PostExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _postService.UpdatePostAsync(post);
 
             return NoContent();
         }
@@ -71,9 +57,7 @@ namespace BlogEngine.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Post>> PostPost(Post post)
         {
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-
+            await _postService.CreatePostAsync(post);
             return CreatedAtAction("GetPost", new { id = post.Id }, post);
         }
 
@@ -81,21 +65,15 @@ namespace BlogEngine.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _postService.GetPostByIdAsync(id);
             if (post == null)
             {
                 return NotFound();
             }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
+            await _postService.DeletePostAsync(id);
 
             return NoContent();
-        }
-
-        private bool PostExists(int id)
-        {
-            return _context.Posts.Any(e => e.Id == id);
         }
     }
 }

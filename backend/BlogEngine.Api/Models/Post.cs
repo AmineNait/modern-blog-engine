@@ -1,11 +1,19 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace BlogEngine.Api.Models
 {
     public class Post
     {
         public int Id { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public required string Title { get; set; }
+
+        [Required]
+        public required string Content { get; set; }
+
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public required Category Category { get; set; }
     }
 }

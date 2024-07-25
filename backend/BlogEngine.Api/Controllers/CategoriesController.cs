@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BlogEngine.Api.Data;
+using BlogEngine.Api.Services;
 using BlogEngine.Api.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BlogEngine.Api.Controllers
 {
@@ -9,32 +10,33 @@ namespace BlogEngine.Api.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly BlogContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(BlogContext context)
+        public CategoriesController(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
-            return await _context.Categories.ToListAsync();
+            var categories = await _categoryService.GetCategoriesAsync();
+            return Ok(categories);
         }
 
         // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
 
             if (category == null)
             {
                 return NotFound();
             }
 
-            return category;
+            return Ok(category);
         }
 
         // PUT: api/Categories/5
@@ -46,23 +48,7 @@ namespace BlogEngine.Api.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(category).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _categoryService.UpdateCategoryAsync(category);
 
             return NoContent();
         }
@@ -71,9 +57,7 @@ namespace BlogEngine.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
+            await _categoryService.CreateCategoryAsync(category);
             return CreatedAtAction("GetCategory", new { id = category.Id }, category);
         }
 
@@ -81,21 +65,15 @@ namespace BlogEngine.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            await _categoryService.DeleteCategoryAsync(id);
 
             return NoContent();
-        }
-
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
         }
     }
 }
