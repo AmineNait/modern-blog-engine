@@ -17,20 +17,22 @@ namespace BlogEngine.Api.Services
 
         public async Task<IEnumerable<Post>> GetPostsAsync()
         {
-            return await _context.Posts.ToListAsync();
+            return await _context.Posts
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<Post> GetPostByIdAsync(int id)
+        public async Task<Post?> GetPostByIdAsync(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
-            return post ?? throw new KeyNotFoundException("Post not found");
+            return await _context.Posts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Post> CreatePostAsync(Post post)
+        public async Task AddPostAsync(Post post)
         {
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
-            return post;
         }
 
         public async Task UpdatePostAsync(Post post)
@@ -42,12 +44,18 @@ namespace BlogEngine.Api.Services
         public async Task DeletePostAsync(int id)
         {
             var post = await _context.Posts.FindAsync(id);
-            if (post == null)
+            if (post != null)
             {
-                throw new KeyNotFoundException("Post not found");
+                _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
             }
-            _context.Posts.Remove(post);
+        }
+
+        public async Task<Post> CreatePostAsync(Post post)
+        {
+            _context.Posts.Add(post);
             await _context.SaveChangesAsync();
+            return post;
         }
     }
 }

@@ -17,20 +17,22 @@ namespace BlogEngine.Api.Services
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<Category> GetCategoryByIdAsync(int id)
+        public async Task<Category?> GetCategoryByIdAsync(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            return category ?? throw new KeyNotFoundException("Category not found");
+            return await _context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<Category> CreateCategoryAsync(Category category)
+        public async Task AddCategoryAsync(Category category)
         {
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
-            return category;
         }
 
         public async Task UpdateCategoryAsync(Category category)
@@ -42,12 +44,18 @@ namespace BlogEngine.Api.Services
         public async Task DeleteCategoryAsync(int id)
         {
             var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+            if (category != null)
             {
-                throw new KeyNotFoundException("Category not found");
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
             }
-            _context.Categories.Remove(category);
+        }
+
+        public async Task<Category> CreateCategoryAsync(Category category)
+        {
+            _context.Categories.Add(category);
             await _context.SaveChangesAsync();
+            return category;
         }
     }
 }

@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using BlogEngine.Api.Data;
 using BlogEngine.Api.Services;
+using BlogEngine.Api.Middleware; // Ajoutez cette ligne pour inclure le middleware
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Configure Kestrel server to listen on port 8080
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(8080);
-});
 
 // Add DbContext
 builder.Services.AddDbContext<BlogContext>(options =>
@@ -35,15 +27,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 
-// Remove HTTPS redirection for development environment
+app.UseMiddleware<ErrorHandlingMiddleware>(); // Ajoutez cette ligne pour utiliser le middleware de gestion des erreurs
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

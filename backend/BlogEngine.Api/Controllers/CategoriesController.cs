@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using BlogEngine.Api.Services;
 using BlogEngine.Api.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using BlogEngine.Api.Services;
 
 namespace BlogEngine.Api.Controllers
 {
@@ -17,7 +15,6 @@ namespace BlogEngine.Api.Controllers
             _categoryService = categoryService;
         }
 
-        // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
@@ -25,23 +22,26 @@ namespace BlogEngine.Api.Controllers
             return Ok(categories);
         }
 
-        // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
             var category = await _categoryService.GetCategoryByIdAsync(id);
-
             if (category == null)
             {
                 return NotFound();
             }
-
             return Ok(category);
         }
 
-        // PUT: api/Categories/5
+        [HttpPost]
+        public async Task<ActionResult<Category>> CreateCategory(Category category)
+        {
+            var createdCategory = await _categoryService.CreateCategoryAsync(category);
+            return CreatedAtAction(nameof(GetCategory), new { id = createdCategory.Id }, createdCategory);
+        }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, Category category)
+        public async Task<IActionResult> UpdateCategory(int id, Category category)
         {
             if (id != category.Id)
             {
@@ -49,30 +49,13 @@ namespace BlogEngine.Api.Controllers
             }
 
             await _categoryService.UpdateCategoryAsync(category);
-
             return NoContent();
         }
 
-        // POST: api/Categories
-        [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
-        {
-            await _categoryService.CreateCategoryAsync(category);
-            return CreatedAtAction("GetCategory", new { id = category.Id }, category);
-        }
-
-        // DELETE: api/Categories/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
             await _categoryService.DeleteCategoryAsync(id);
-
             return NoContent();
         }
     }
