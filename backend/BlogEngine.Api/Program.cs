@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BlogEngine.Api.Data;
 using BlogEngine.Api.Services;
-using BlogEngine.Api.Middleware; // Ajoutez cette ligne pour inclure le middleware
+using BlogEngine.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +24,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlogEngine API V1");
+        c.RoutePrefix = string.Empty;
+    });
     app.UseDeveloperExceptionPage();
 }
 else
@@ -33,7 +37,7 @@ else
     app.UseHsts();
 }
 
-app.UseMiddleware<ErrorHandlingMiddleware>(); // Ajoutez cette ligne pour utiliser le middleware de gestion des erreurs
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (!app.Environment.IsDevelopment())
 {

@@ -16,9 +16,9 @@ namespace BlogEngine.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var categories = await _categoryService.GetCategoriesAsync();
+            var categories = await _categoryService.GetCategoriesAsync(pageNumber, pageSize);
             return Ok(categories);
         }
 

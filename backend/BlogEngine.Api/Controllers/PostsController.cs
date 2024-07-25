@@ -16,9 +16,9 @@ namespace BlogEngine.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
+        public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var posts = await _postService.GetPostsAsync();
+            var posts = await _postService.GetPostsAsync(pageNumber, pageSize);
             return Ok(posts);
         }
 

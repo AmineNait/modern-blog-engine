@@ -1,8 +1,6 @@
 using BlogEngine.Api.Data;
 using BlogEngine.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace BlogEngine.Api.Services
 {
@@ -15,11 +13,13 @@ namespace BlogEngine.Api.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Post>> GetPostsAsync()
+        public async Task<IEnumerable<Post>> GetPostsAsync(int pageNumber, int pageSize)
         {
             return await _context.Posts
                 .Include(p => p.Category)
                 .AsNoTracking()
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 

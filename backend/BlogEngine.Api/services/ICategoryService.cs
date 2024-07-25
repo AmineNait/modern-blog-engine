@@ -1,12 +1,10 @@
 using BlogEngine.Api.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace BlogEngine.Api.Services
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<Category>> GetCategoriesAsync();
+        Task<IEnumerable<Category>> GetCategoriesAsync(int pageNumber, int pageSize);
         Task<Category?> GetCategoryByIdAsync(int id);
         Task AddCategoryAsync(Category category);
         Task UpdateCategoryAsync(Category category);
