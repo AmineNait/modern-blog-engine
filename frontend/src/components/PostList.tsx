@@ -1,23 +1,28 @@
-interface Post {
+import React from 'react';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+
+type Post = {
   id: number;
   title: string;
   content: string;
-}
+};
 
-interface PostListProps {
+type PostListProps = {
   posts: Post[];
-}
+};
 
 const PostList: React.FC<PostListProps> = ({ posts }) => {
   return (
-    <ul>
+    <Box>
       {posts.map((post) => (
-        <li key={post.id}>
-          <h2>{post.title}</h2>
-          <p>{post.content}</p>
-        </li>
+        <Paper key={post.id} className='mb-4 p-2'>
+          <Typography variant='h6'>{post.title}</Typography>
+          <Typography>{post.content}</Typography>
+        </Paper>
       ))}
-    </ul>
+    </Box>
   );
 };
 

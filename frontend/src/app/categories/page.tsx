@@ -1,35 +1,22 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import api from '../../utils/api';
+import React from 'react';
 import CategoryList from '../../components/CategoryList';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 
-interface Category {
-  id: number;
-  name: string;
-}
+const categories = [
+  { id: 1, name: 'Technology' },
+  { id: 2, name: 'Health' },
+  { id: 3, name: 'Travel' },
+];
 
-const CategoriesPage = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await api.get('/categories');
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
+const CategoriesPage: React.FC = () => {
   return (
-    <div>
-      <h1>Categories</h1>
+    <Container>
+      <Typography variant='h4' gutterBottom>
+        Categories
+      </Typography>
       <CategoryList categories={categories} />
-    </div>
+    </Container>
   );
 };
 

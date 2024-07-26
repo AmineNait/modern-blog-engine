@@ -1,8 +1,13 @@
-export default function AboutPage() {
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+
+export default function About() {
   return (
-    <div>
-      <h2>About Us</h2>
-      <p>This is the about page of my blog.</p>
-    </div>
+    <Container>
+      <Typography variant='h4' gutterBottom>
+        About Us
+      </Typography>
+      <Typography>This is the about page of the Blog Engine.</Typography>
+    </Container>
   );
 }
